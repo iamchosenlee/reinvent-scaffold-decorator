@@ -64,6 +64,13 @@ N#CC1CC(N2CC2(O)F)CCCC1n1cc(C(N)=O)c(Nc2ccnc(F)c2)n1
 #################################################################################################
 
 ~~~~
+<br/>
+<br/>
+This is an example of generated molecules with optimization. <br/>
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/29084981/128223568-4f92a595-2ad7-45b0-903c-4ae0834f4e47.png">
+</p>
+
 
 Requirements
 ------------
