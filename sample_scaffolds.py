@@ -17,6 +17,9 @@ import utils.chem as uc
 import utils.spark as us
 import utils.scaffold as usc
 
+import pandas as pd
+import time
+from join_test import fast_join
 
 def _cleanup_decoration(dec_smi):
     dec_mol = uc.to_mol(dec_smi)
@@ -244,14 +247,14 @@ def parse_args():
                         help="Number of Spark partitions to use (leave it if you don't know what it means) \
                             [DEFAULT: 1000]",
                         type=int, default=1000)
-    parser.add_argument("--decorator-type", "-d",
-                        help="Type of decorator TYPES=(single, multi) [DEFAULT: multi].",
+    parser.add_argument("--decorator TYPES=(single, multi) [DEFAULT: multi].",
                         type=str, default="multi")
     parser.add_argument("--output-format", "--of",
                         help="Format of the output FORMATS=(parquet,csv) [DEFAULT: parquet].",
                         type=str, default="parquet")
     parser.add_argument("--repeated-randomized-smiles", help="The randomized SMILES can be repeated.",
                         action="store_true", default=False)
+    parser.add_argument("--fast", help="fast_join flag", action='store_true' )
 
     return parser.parse_args()
 
@@ -263,26 +266,36 @@ def main():
     model = mm.DecoratorModel.load_from_file(args.model_path, mode="eval")
     input_scaffolds = list(uc.read_smi_file(args.input_scaffold_path))
 
-    sample_scaffolds = SampleScaffolds(
-        model,
-        num_randomized_smiles=args.num_randomized_smiles,
-        num_decorations_per_scaffold=args.num_decorations_per_scaffold,
-        decorator_type=args.decorator_type,
-        batch_size=args.batch_size,
-        num_partitions=args.num_partitions,
-        repeated_randomized_smiles=args.repeated_randomized_smiles,
-        logger=LOG
-    )
+    if args.fast:
 
-    results_df = sample_scaffolds.run(input_scaffolds)
 
-    if args.output_format == "parquet":
-        results_df.write.parquet(args.output_path)
+#         sample_scaffolds = SampleScaffolds(
+            # model,
+            # num_randomized_smiles=args.num_randomized_smiles,
+            # num_decorations_per_scaffold=args.num_decorations_per_scaffold,
+            # decorator_type=args.decorator_type,
+            # batch_size=args.batch_size,
+            # num_partitions=args.num_partitions,
+            # repeated_randomized_smiles=args.repeated_randomized_smiles,
+            # logger=None
+        # )
+
+        now = time.time()
+        # results_df = fast_join(input_scaffolds, sample_scaffolds._sample_model_action)
+        results_df = fast_join(input_scaffolds, ma.SampleModel(model, 16))
+        print("time", time.time()-now)
+        results_df.to_csv(args.output_path, index=False)
+
     else:
-        results_df.toPandas().to_csv(args.output_path)
+        results_df = sample_scaffolds.run(input_scaffolds)
+
+        if args.output_format == "parquet":
+            results_df.write.parquet(args.output_path)
+        else:
+            results_df.toPandas().to_csv(args.output_path)
 
 
-LOG = ul.get_logger(name="sample_scaffolds")
-SPARK, SC = us.SparkSessionSingleton.get("sample_scaffolds")
+# LOG = ul.get_logger(name="sample_scaffolds")
+# SPARK, SC = us.SparkSessionSingleton.get("sample_scaffolds")
 if __name__ == "__main__":
     main()
