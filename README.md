@@ -1,7 +1,9 @@
 Implementation of the SMILES-based scaffold decorator used in "SMILES-based deep generative scaffold decorator for de-novo drug design"
 =======================================================================================================================================
 
-This repository holds all the code used to create, train and sample a SMILES-based scaffold decorator described in [SMILES-based deep generative scaffold decorator for de-novo drug design](https://chemrxiv.org/articles/SMILES-Based_Deep_Generative_Scaffold_Decorator_for_De-Novo_Drug_Design/11638383). Additionally, it contains the code for pre-processing the training set, as explained in the manuscript. 
+This repository holds all the code used to create, train and sample a SMILES-based scaffold decorator described in [SMILES-based deep generative scaffold decorator for de-novo drug design](https://chemrxiv.org/articles/SMILES-Based_Deep_Generative_Scaffold_Decorator_for_De-Novo_Drug_Design/11638383). Additionally, it contains the code for pre-processing the training set, as explained in the manuscript.
+
+Here is a **[project report](https://github.com/iamchosenlee/reinvent-scaffold-decorator/files/8841810/Final_Project_Report.pdf)** about **Molecule Optimization using Reinforcement Learning in Synthetic Chemical Space** for Pattern Recognition Spring 2021.
 
 The scripts and folders are the following:
 
